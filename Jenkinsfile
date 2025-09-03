@@ -21,6 +21,10 @@ pipeline {
 
                 # Install Cypress
                 npm install cypress --save-dev
+
+                # Install Xvfb
+                sudo apt-get update
+                sudo apt-get install -y xvfb
                 '''
             }
         }
