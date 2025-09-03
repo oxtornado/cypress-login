@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         NODE_VERSION = '18.x'
+        PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin:${PATH}"
     }
 
     stages {
@@ -42,4 +43,3 @@ pipeline {
             archiveArtifacts artifacts: 'cypress/screenshots/**/*.png', allowEmptyArchive: true
         }
     }
-}
