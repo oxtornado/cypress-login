@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/oxtornado/cypress-login.git', 'main' // Specify the branch here
+                git 'https://github.com/oxtornado/login-cypress.git', 'main' // Specify the branch here
             }
         }
 
@@ -21,7 +21,7 @@ pipeline {
                 sudo apt-get install -y nodejs
 
                 # Install Cypress
-                npm install cypress --save-dev
+                npm install
 
                 # Install Xvfb
                 sudo apt-get update
@@ -43,3 +43,4 @@ pipeline {
             archiveArtifacts artifacts: 'cypress/screenshots/**/*.png', allowEmptyArchive: true
         }
     }
+}
