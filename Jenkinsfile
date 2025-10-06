@@ -1,38 +1,40 @@
 pipeline {
-    agent any
-
-    environment {
-        NODE_VERSION = '18.x'
-        PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin:${PATH}"
+    agent {
+        docker {
+            image 'cypress/included:13.16.1'
+            args '-v $PWD:/app -w /app'
+        }
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/oxtornado/login-cypress.git', 'main' // Specify the branch here
+                git branch: 'main', url: 'https://github.com/oxtornado/login-cypress.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh '''
-                # Install Node.js
-                curl -sL https://deb.nodesource.com/setup_${NODE_VERSION} | sudo -E bash -
-                sudo apt-get install -y nodejs
-
-                # Install Cypress
-                npm install
-
-                # Install Xvfb
-                sudo apt-get update
-                sudo apt-get install -y xvfb
-                '''
+                sh 'npm ci'
             }
         }
 
-        stage('Run Cypress Tests') {
+        stage('Start Server & Run Tests') {
             steps {
-                sh 'npx cypress run'
+                sh '''
+                # Start server in background
+                node server.js &
+                SERVER_PID=$!
+                
+                # Wait for server
+                npx wait-on http://localhost:8080 -t 30000 || (echo "Server failed to start" && kill $SERVER_PID && exit 1)
+                
+                # Run Cypress
+                npx cypress run
+                
+                # Kill server
+                kill $SERVER_PID
+                '''
             }
         }
     }
