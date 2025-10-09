@@ -9,7 +9,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/oxtornado/login-cypress.git'
+                script {
+                    try {
+                        git 'https://github.com/oxtornado/login-cypress.git'
+                    } catch (Exception e) {
+                        echo "Error during git checkout: ${e}"
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
             }
         }
 
